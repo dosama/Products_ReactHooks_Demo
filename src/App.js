@@ -6,9 +6,10 @@ function App() {
   return (
     <div className="App">
       <header className="App-header">
+        <button className="btn btn-danger">Hello</button>
         <img src={logo} className="App-logo" alt="logo" />
         <p>
-          Edit <code>src/App.js</code> and save to reload.
+          Edit <code>src/App.js</code> and save to reload2.
         </p>
         <a
           className="App-link"
