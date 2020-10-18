@@ -10,11 +10,11 @@ function Sidebar() {
         <ul className="nav flex-column">
           <li className="nav-item">
             <a className="nav-link active" aria-current="page" href="#">
-              <span className="feather"><Icon.Home /></span>
-              Dashboard
+              <span className="feather"><Icon.ShoppingCart /></span>
+              Products
             </a>
           </li>
-          <li className="nav-item">
+          {/* <li className="nav-item">
             <a className="nav-link" href="#">
             <span className="feather"><Icon.File /></span>
               Orders
@@ -45,7 +45,8 @@ function Sidebar() {
               Integrations
             </a>
           </li>
-        </ul>
+        */}
+         </ul>
    </div>
     </nav>
 
