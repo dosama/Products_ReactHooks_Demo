@@ -1,6 +1,10 @@
 import React from 'react';
 import './Products.css';
 
+function paginate (array, page_size, page_number) {
+    return array.slice((page_number-1) * page_size, (page_number) * page_size);
+  }
+  
 function Products() {
   return (
   <div  className="Products">
