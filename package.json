@@ -10,6 +10,7 @@
     "bootstrap": "^4.5.3",
     "feather-icons": "^4.28.0",
     "react": "^16.14.0",
+    "react-autosuggest": "^10.0.3",
     "react-dom": "^16.14.0",
     "react-feather": "^2.0.8",
     "react-paginate": "^6.5.0",

@@ -1,10 +1,10 @@
 import React, { useEffect, useState } from 'react';
-import prouctService from '../../api/products-service';
+import productService from '../../api/products-service';
 import departmentService from '../../api/departments-service';
 import promotionService from '../../api/promotions-service';
 import './Products.css';
 import ReactPaginate from 'react-paginate';
-
+import productSearchEvent from '../events/product-search-event';
 
 
 function Products() {
@@ -15,15 +15,23 @@ function Products() {
     const [department, setDepartment] = useState(-1);
     const [promotion, setPromotion] = useState(-1);
     const [pagination, setPagination] = useState({ offset: 0, perPage: 5, currentPage: 0, pageCount: 0 });
-
-
-    const paginate = (data) => {
+    
+    productSearchEvent
+      .on('productSearchCompleted', selectedProductValue => {
+      
+        const displayedProducts = selectedProductValue ? products.filter(product => product.id == selectedProductValue): products;
+        setDisplayedProducts(displayedProducts);
+        paginate(displayedProducts);
+         
+      } );
+    
+      const paginate = (data) => {
         setDisplayedProducts(data.slice(pagination.offset, pagination.offset + pagination.perPage));
         setPagination({ ...pagination, pageCount: Number(Math.ceil((data.length) / (pagination.perPage))) });
 
     }
     const loadProducts = () => {
-        prouctService.getProducts()
+        productService.getProducts()
             .then(res => {
                 setProducts(res.data);
                 paginate(res.data);
@@ -62,8 +70,8 @@ function Products() {
     };
 
     const applyFilter = () => {
-        console.log()
-        prouctService.filterProducts(department, promotion)
+       
+        productService.filterProducts(department, promotion)
             .then(res => {
                 setProducts([...res.data]);
                 paginate(res.data);
