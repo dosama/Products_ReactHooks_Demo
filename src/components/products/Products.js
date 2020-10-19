@@ -3,29 +3,44 @@ import prouctService from '../../api/products-service';
 import departmentService from '../../api/departments-service';
 import promotionService from '../../api/promotions-service';
 import './Products.css';
-import productService from '../../api/products-service';
+import ReactPaginate from 'react-paginate';
 
-function paginate(array, page_size, page_number) {
-    return array.slice((page_number - 1) * page_size, (page_number) * page_size);
-}
+
 
 function Products() {
     const [products, setProducts] = useState([]);
+    const [displayedProducts, setDisplayedProducts] = useState([]);
     const [departments, setDepartments] = useState([]);
     const [promotions, setPromotions] = useState([]);
     const [department, setDepartment] = useState(-1);
     const [promotion, setPromotion] = useState(-1);
-    useEffect(() => {
-        if(!products)
-        {
-            prouctService.getProducts()
-            .then(res => setProducts(res.data))
+    const [pagination, setPagination] = useState({ offset: 0, perPage: 5, currentPage: 0, pageCount: 0 });
+
+
+    const paginate = (data) => {
+        setDisplayedProducts(data.slice(pagination.offset, pagination.offset + pagination.perPage));
+        setPagination({ ...pagination, pageCount: Number(Math.ceil((data.length) / (pagination.perPage))) });
+
+    }
+    const loadProducts = () => {
+        prouctService.getProducts()
+            .then(res => {
+                setProducts(res.data);
+                paginate(res.data);
+            })
             .catch(err => console.log(err));
+    };
+
+    useEffect(() => {
+        if (products.length > 0) {
+            paginate(products);
+        }
+        else {
+            loadProducts();
         }
     }, [products]);
 
     useEffect(() => {
-
         departmentService.getDepartments()
             .then(res => setDepartments(res.data))
             .catch(err => console.log(err));
@@ -33,7 +48,6 @@ function Products() {
     }, [departments]);
 
     useEffect(() => {
-
         promotionService.getPromotions()
             .then(res => setPromotions(res.data))
             .catch(err => console.log(err));
@@ -46,12 +60,27 @@ function Products() {
     const handlePromotionChange = (e) => {
         setPromotion(e.target.value);
     };
-    
+
     const applyFilter = () => {
-            prouctService.filterProducts(department,promotion)
-                .then(res => setProducts([...res.data]))
-                .catch(err => console.log(err));
-        };
+        console.log()
+        prouctService.filterProducts(department, promotion)
+            .then(res => {
+                setProducts([...res.data]);
+                paginate(res.data);
+            })
+            .catch(err => console.log(err));
+    };
+
+    const handlePageChange = (e) => {
+        const selectedPage = e.selected;
+        setPagination({
+            ...pagination,
+            offset: selectedPage * pagination.perPage,
+            currentPage: selectedPage
+        });
+
+        loadProducts();
+    };
     return (
         <div className="Products">
             <div className="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
@@ -101,7 +130,7 @@ function Products() {
                     </thead>
                     <tbody>
 
-                        {products.map((product) =>
+                        {displayedProducts.map((product) =>
                             <tr key={product.id}>
                                 < td > {product.name} </td>
                                 < td > {product.price} </td>
@@ -115,6 +144,18 @@ function Products() {
 
                     </tbody>
                 </table>
+                <ReactPaginate
+                    previousLabel={"prev"}
+                    nextLabel={"next"}
+                    breakLabel={"..."}
+                    breakClassName={"break-me"}
+                    pageCount={pagination.pageCount}
+                    marginPagesDisplayed={2}
+                    pageRangeDisplayed={5}
+                    onPageChange={handlePageChange}
+                    containerClassName={"pagination"}
+                    subContainerClassName={"pages pagination"}
+                    activeClassName={"active"} />
             </div>
 
         </div>
